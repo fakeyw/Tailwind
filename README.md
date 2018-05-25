@@ -1,5 +1,15 @@
 ## 开发备忘
 
+计划变更：在此基础上，将im服务变为im框架，尽量支持多种形式的通讯
+
+
+
+
+
+
+
+
+
 > 以下模块都会尽量设计为可复用的形式，但又带有一定特性
 
 ###### 基本通用的 连接sql的 用户模块（finished）Tiny_storage
@@ -53,7 +63,7 @@ func:
 
 ---
 
-###### Cookie管理模块 (working)  Zookie
+###### Cookie管理模块 (finished)  easy_cookie
 
 **形式**
 
@@ -61,7 +71,7 @@ func:
 - 包含信息字段选择可变
 - Get/Check函数由cookie模型建立时自动产生
   - Get(user_info) -> cookie_str
-  - Check(cookie_str) -> Info/Unknown(None)/TLE 
+  - Check(cookie_str) -> Info/Unknown(Exception)/TLE(None) 
 
 >举个栗子：Check(cookie) -> Unknown -> Get(guest , True) 
 >
@@ -80,7 +90,7 @@ func:
 
 ---
 
-###### 通用用户身份管理模块
+###### 通用用户身份管理模块 （working）AUcheck
 
 用户建模 - 权限建模
 
@@ -107,10 +117,14 @@ func:
   - 无权时报错 NotAuthException
 - 关于数据库(Nosql设计)
   - 暂选unqlite
+  - 实际上unqlite作为嵌入式数据库，对并发的支持并不算好，以后很可能会转为其他数据库。但其接口又有一些特性，所以还是需要封装一层有一定标准的nosql接口
+    - 写了个简单的 Nopi.py，添加了unqlite连接支持，支持k-v、collection
+  - 至少三个数据库，一个存用户，一个存权限/用户组，一个存日志
   - 键值内容：
     - 用户名 - uuid
     - uuid_属性名 - 属性内容
-    - uuid_auth - 
+    - uuid_auth - 用户组
+    - group_用户组名 - 权限 （多个）
 
 ---
 
@@ -154,7 +168,7 @@ func:
 要求有如下特性：
 
 1. web api 方便注册
-2. 适应基于http的 多订阅-推送机制
+2. 适应基于http的 多订阅 - 推送机制
 3. 动态添加api
 
 **突然想到的新特性：应用层协议可选，自定义协议类[参数列表，注册函数中可暴露的参数列表，解析函数，封装函数......] 从解析过程到函数生成看来都要改一下呢 = = **
